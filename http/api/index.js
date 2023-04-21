@@ -3,6 +3,7 @@ const URL = require('url');
 const fs = require('fs');
 const path = require('path')
 const data = require('./urls.json');
+const { randomUUID } = require('crypto')
 
 function writeFile(cb) {
 
@@ -21,6 +22,7 @@ function writeFile(cb) {
 http.createServer((req, res) => {
 
     const { name, url, del } = URL.parse(req.url, true).query
+    const id = randomUUID();
 
     res.writeHead(200, {
 
@@ -37,7 +39,7 @@ http.createServer((req, res) => {
         return writeFile((message) => res.end(message))
     }
     
-    data.urls.push({name, url});
+    data.urls.push({name, url, id});
 
     return writeFile((message) => res.end(message))
 

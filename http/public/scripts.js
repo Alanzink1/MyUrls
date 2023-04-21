@@ -5,20 +5,30 @@ const form = document.querySelector('form')
 
 async function load() {
     const res = await fetch("http://localhost:3000/").then((data) => data.json())
-    
-    res.urls.map(({name, url}) => addElement({name, url}))
+    res.urls.map(({name, url, id}) => addElement({name, url, id}));
+
+}
+
+async function update(name, url, id, del) {
+
+    if(del){
+        let res = await fetch(`http://localhost:3000/?name=${name}&url=${url}&id=${id}&del=1`);
+    } else {    
+        let res = await fetch(`http://localhost:3000/?name=${name}&url=${url}`);
+    }
+
 }
 
 load()
 
-
-function addElement({ name, url }) {
+function addElement({ name, url, id }) {
     const li = document.createElement('li')
     const a = document.createElement("a")
     const trash = document.createElement("span")
 
     a.href = url
     a.innerHTML = name
+    a.id = id
     a.target = "_blank"
 
     trash.innerHTML = "x"
@@ -30,8 +40,10 @@ function addElement({ name, url }) {
 }
 
 function removeElement(el) {
-    if (confirm('Tem certeza que deseja deletar?'))
-        el.parentNode.remove()
+    if (confirm('Tem certeza que deseja deletar?')) {
+        update(el.parentNode.children[0].innerHTML, el.parentNode.children[0].href, el.parentNode.children[0].id, true);
+        el.parentNode.remove();
+    }
 }
 
 form.addEventListener("submit", (event) => {
@@ -51,6 +63,7 @@ form.addEventListener("submit", (event) => {
         return alert("Digite a url da maneira correta")
 
     addElement({ name, url })
+    update(name, url+'/', false, false)
 
     input.value = ""
 })
